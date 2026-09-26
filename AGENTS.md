@@ -150,3 +150,22 @@ ADR 位于 `docs/adr/`，格式与流程见 [ADR README](docs/adr/README.md)。�
 - 数据类、接口、关键值对象 MUST 使用 TypeScript 的 JSDoc（对应数据说明要求），说明用途、单位、可空含义、版本及所有权；DTO、持久化实体与领域对象分别说明。
 - 新代码中的有限状态、动作、类型和错误码 MUST 使用枚举；序列化和数据库边界 MUST 显式保存稳定的字符串协议值并测试映射。
 - 关键处理阶段与失败分支 MUST 提供可操作的结构化日志，含适用的 requestId、实体 ID、状态、阶段、耗时和安全错误码。MUST 遵守 DDD §13.1 的过滤规则，禁止记录凭据、令牌、敏感载荷或直接展开外部异常；SQL 参数调试默认关闭。
+
+## Parallel Agent Rules
+
+- 并行 Worker MUST NOT 直接修改 canonical design、ADR 或 implementation-status，
+  除非当前任务明确授予其文档写权限。
+- Worker 负责实现、测试，并输出：
+  - task ID
+  - changed files
+  - commands
+  - test results
+  - AC / INV / Txx evidence
+  - discovered gaps
+- Coordinator 负责合并 Worker 结果，并串行更新：
+  - implementation-status
+  - work-package
+  - canonical design
+  - ADR
+- canonical design、ADR、Active Work Package 和 implementation-status
+  均采用 single-writer 原则。
